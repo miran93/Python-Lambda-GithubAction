@@ -28,7 +28,7 @@ jobs:
     - name: Create zip
       id: lambda-zip
       run: |
-        zip -r $ZIP_FILE ./ --exclude="${ZIP_EXCLUDE}"
+        zip -r $ZIP_FILE ./ --exclude $ZIP_EXCLUDE
 
 #    - name: Fill in the new image ID in the Amazon ECS task definition
 #      id: task-def
