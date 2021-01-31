@@ -12,7 +12,7 @@ jobs:
     env:
       AWS_REGION: eu-west-2
       ZIP_FILE: 'app-${{ github.sha }}.zip'
-      ZIP_EXCLUDE: '*.git*,nothing'
+      ZIP_EXCLUDE: '\*.git* \*nothing*'
 
     steps: 
     - name: Checkout
