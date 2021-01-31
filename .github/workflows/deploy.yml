@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       AWS_REGION: eu-west-2
-      ZIP_FUNCTION: 'app-${{ GITHUB_SHA }}.zip'
+      ZIP_FUNCTION: 'app-${{ github.sha }}.zip'
 
     steps:
     - name: Checkout
