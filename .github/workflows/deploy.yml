@@ -1,5 +1,5 @@
+---
 name: Deploy lambda function 
-
 on:
   push:
     branches:
@@ -14,56 +14,33 @@ jobs:
       ZIP_FILE: 'app-${{ github.sha }}.zip'
 
     steps: 
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Configure AWS credentials
-      id: aws-conf
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-
-    - run: ansible --version
-    - run: pip install boto3
-    - name: Create zip
-      id: lambda-zip
-      run: |
-        zip -r $ZIP_FILE ./ --exclude *git*
-
-    - name: Deploy lambda
-      id: lambda-deploy
-      run: >-
-        ansible localhost -m lambda -a 
-        "name=helloworld 
-         state=present
-         zip_file=${ZIP_FILE}
-         role='arn:aws:iam::${{ steps.aws-conf.outputs.aws-account-id }}:role/LambdaRole'
-         handler='hello.lambda_handler' 
-         runtime=python3.8"
-
-#    - name: Deploy lambda
-#      uses: appleboy/lambda-action@master
-#      with:
-#        function_name: helloworld 
-#        runtime: python3.8
-#        handler: hello.lambda_handler
-#        zip_file: ${{ env.ZIP_FILE }}
-#        role: arn:aws:iam::${{ steps.aws-conf.outputs.aws-account-id }}:role/LambdaRole
-#
-#    - name: Fill in the new image ID in the Amazon ECS task definition
-#      id: task-def
-#      uses: aws-actions/amazon-ecs-render-task-definition@v1
-#      with:
-#        task-definition: task-definition.json
-#        container-name: sample-app
-#        image: ${{ steps.build-image.outputs.image }}
-#
-#    - name: Deploy Amazon ECS task definition
-#      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-#      with:
-#        task-definition: ${{ steps.task-def.outputs.task-definition }}
-#        service: sample-app-service
-#        cluster: default
-#        wait-for-service-stability: true
+      - name: Checkout
+        uses: actions/checkout@v2
+  
+      - name: Configure AWS credentials
+        id: aws-conf
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+  
+      - name: Create zip
+        id: lambda-zip
+        run: |
+          zip -r $ZIP_FILE ./ --exclude *git*
+  
+      - name: Install dependency
+        run: pip install boto3
+  
+      - name: Deploy lambda
+        id: lambda-deploy
+        run: >-
+          ansible localhost -m lambda -a 
+          "name=helloworld 
+           state=present
+           zip_file=${ZIP_FILE}
+           role='arn:aws:iam::${{ steps.aws-conf.outputs.aws-account-id }}:role/LambdaRole'
+           handler='hello.lambda_handler' 
+           runtime=python3.8"
+  
