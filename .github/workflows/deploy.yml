@@ -12,13 +12,13 @@ jobs:
     env:
       AWS_REGION: eu-west-2
       ZIP_FILE: 'app-${{ github.sha }}.zip'
-      ZIP_EXCLUDE: '\*.git* \*nothing*'
 
     steps: 
     - name: Checkout
       uses: actions/checkout@v2
 
     - name: Configure AWS credentials
+      id: aws-conf
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -28,7 +28,16 @@ jobs:
     - name: Create zip
       id: lambda-zip
       run: |
-        zip -r $ZIP_FILE ./ --exclude $ZIP_EXCLUDE
+        zip -r $ZIP_FILE ./ --exclude *git*
+
+    - name: Deploy lambda
+      uses: appleboy/lambda-action@master
+      with:
+        function_name: helloworld 
+        runtime: python3.8
+        handler: hello.lambda_handler
+        zip_file: ${{ env.ZIP_FILE }}
+        role: arn:aws:iam::${{ steps.aws-conf.outputs.aws-account-id }}:role/LambdaRole
 
 #    - name: Fill in the new image ID in the Amazon ECS task definition
 #      id: task-def
