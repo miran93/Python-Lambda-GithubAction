@@ -26,6 +26,7 @@ jobs:
         aws-region: ${{ env.AWS_REGION }}
 
     - run: ansible --version
+    - run: pip install boto3
     - name: Create zip
       id: lambda-zip
       run: |
