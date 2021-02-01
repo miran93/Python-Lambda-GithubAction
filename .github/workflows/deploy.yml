@@ -31,14 +31,25 @@ jobs:
         zip -r $ZIP_FILE ./ --exclude *git*
 
     - name: Deploy lambda
-      uses: appleboy/lambda-action@master
-      with:
-        function_name: helloworld 
-        runtime: python3.8
-        handler: hello.lambda_handler
-        zip_file: ${{ env.ZIP_FILE }}
-        role: arn:aws:iam::${{ steps.aws-conf.outputs.aws-account-id }}:role/LambdaRole
+      id: lambda-deploy
+      run: >-
+        ansible localhost -m lambda -a 
+        "name=helloworld 
+         state=present
+         zip_file=${ZIP_FILE}
+         role='arn:aws:iam::${{ steps.aws-conf.outputs.aws-account-id }}:role/LambdaRole'
+         handler='hello.lambda_handler' 
+         runtime=python3.8" 
 
+#    - name: Deploy lambda
+#      uses: appleboy/lambda-action@master
+#      with:
+#        function_name: helloworld 
+#        runtime: python3.8
+#        handler: hello.lambda_handler
+#        zip_file: ${{ env.ZIP_FILE }}
+#        role: arn:aws:iam::${{ steps.aws-conf.outputs.aws-account-id }}:role/LambdaRole
+#
 #    - name: Fill in the new image ID in the Amazon ECS task definition
 #      id: task-def
 #      uses: aws-actions/amazon-ecs-render-task-definition@v1
