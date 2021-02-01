@@ -25,6 +25,7 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
 
+    - run: ansible --version
     - name: Create zip
       id: lambda-zip
       run: |
@@ -40,6 +41,7 @@ jobs:
          role='arn:aws:iam::${{ steps.aws-conf.outputs.aws-account-id }}:role/LambdaRole'
          handler='hello.lambda_handler' 
          runtime=python3.8" 
+         -e 'ansible_python_interpreter=/usr/bin/python3'
 
 #    - name: Deploy lambda
 #      uses: appleboy/lambda-action@master
