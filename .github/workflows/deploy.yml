@@ -10,7 +10,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     env:
-      AWS_REGION: eu-west-2
+      AWS_REGION: us-east-1
       ZIP_FILE: 'app-${{ github.sha }}.zip'
 
     steps: 
@@ -23,24 +23,16 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: us-east-1
   
       - name: Create zip
         id: lambda-zip
         run: |
-          zip -r $ZIP_FILE ./ --exclude *git*
+          zip -r deploy.zip ./ --exclude *git*
   
       - name: Install dependency
         run: pip install boto3
   
-      - name: Deploy lambda
-        id: lambda-deploy
-        run: >-
-          ansible localhost -m lambda -a 
-          "name=helloworld 
-           state=present
-           zip_file=${ZIP_FILE}
-           role='arn:aws:iam::${{ steps.aws-conf.outputs.aws-account-id }}:role/LambdaRole'
-           handler='hello.lambda_handler' 
-           runtime=python3.8"
+      - name: Upload to Lambda
+        run: aws lambda update-function-code --function-name  arn:aws:lambda:us-east-1:360833390362:function:PythonFunction --zip-file=fileb://deploy.zip
   
