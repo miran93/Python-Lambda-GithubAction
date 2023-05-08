@@ -4,5 +4,5 @@ def lambda_handler(event, context):
     # TODO implement
     return {
         'statusCode': 200,
-        'body': json.dumps('Hello from Update Lambda! Deployed with Ansible Actions')
+        'body': json.dumps('Hello from Miran!')
     }
