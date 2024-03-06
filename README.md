@@ -1,1 +1,1 @@
-GithubAction Lambda Python
+GithubAction Lambda Python application
